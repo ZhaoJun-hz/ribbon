@@ -73,6 +73,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
     @Deprecated
     public ZoneAwareLoadBalancer(IClientConfig clientConfig, IRule rule,
             IPing ping, ServerList<T> serverList, ServerListFilter<T> filter) {
+        // 调用父类
         super(clientConfig, rule, ping, serverList, filter);
     }
 
@@ -108,6 +109,7 @@ public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLo
         
     @Override
     public Server chooseServer(Object key) {
+        // 如果一个zone的话，走当前分支
         if (!ENABLED.get() || getLoadBalancerStats().getAvailableZones().size() <= 1) {
             logger.debug("Zone aware logic disabled or there is only one zone");
             return super.chooseServer(key);

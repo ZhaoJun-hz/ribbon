@@ -744,6 +744,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
      * @return the dedicated server
      */
     public Server chooseServer(Object key) {
+        // 计数
         if (counter == null) {
             counter = createCounter();
         }
@@ -752,6 +753,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             return null;
         } else {
             try {
+                // 使用负载均衡策略，选择一个实例，默认的是ZoneAvoidanceRule，其choose()在父类PredicateBasedRule
                 return rule.choose(key);
             } catch (Exception e) {
                 logger.warn("LoadBalancer [{}]:  Error choosing server for key {}", name, key, e);

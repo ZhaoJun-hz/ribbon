@@ -56,6 +56,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
 
     volatile ServerListFilter<T> filter;
 
+    // UpdateAction是一个类对象，该类中有一个doUpdate方法，核心逻辑就是updateListOfServers
     protected final ServerListUpdater.UpdateAction updateAction = new ServerListUpdater.UpdateAction() {
         @Override
         public void doUpdate() {
@@ -139,8 +140,13 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         boolean primeConnection = this.isEnablePrimingConnections();
         // turn this off to avoid duplicated asynchronous priming done in BaseLoadBalancer.setServerList()
         this.setEnablePrimingConnections(false);
+
+        // 该方法会开启一个延时定时任务，若干时间之后每隔一定时间就去Eureka Client缓存中获取新的服务实例信息，然后
+        // 更新到Ribbon本地缓存中
+        // Eureka Client也会定时从Eureka Server更新服务信息
         enableAndInitLearnNewServersFeature();
 
+        // 上面定义了延迟定时任务，并没有立马执行，所以这里紧接着就立马执行一次
         updateListOfServers();
         if (primeConnection && this.getPrimeConnections() != null) {
             this.getPrimeConnections()
@@ -220,6 +226,7 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
      */
     public void enableAndInitLearnNewServersFeature() {
         LOGGER.info("Using serverListUpdater {}", serverListUpdater.getClass().getSimpleName());
+
         serverListUpdater.start(updateAction);
     }
 

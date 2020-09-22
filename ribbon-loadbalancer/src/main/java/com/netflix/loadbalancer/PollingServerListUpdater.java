@@ -103,6 +103,7 @@ public class PollingServerListUpdater implements ServerListUpdater {
     @Override
     public synchronized void start(final UpdateAction updateAction) {
         if (isActive.compareAndSet(false, true)) {
+            // 定义了线程，线程逻辑就是调用传进来的updateAction的doUpdate方法
             final Runnable wrapperRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -121,6 +122,7 @@ public class PollingServerListUpdater implements ServerListUpdater {
                 }
             };
 
+            // 定义了延迟定时任务，定时任务逻辑就是上面的线程逻辑，定时更新服务信息
             scheduledFuture = getRefreshExecutor().scheduleWithFixedDelay(
                     wrapperRunnable,
                     initialDelayMs,

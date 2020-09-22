@@ -147,8 +147,11 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      */
     private int incrementAndGetModulo(int modulo) {
         for (;;) {
+            // 获取当前服务实例的索引值
             int current = nextIndex.get();
+            // 通过求余的方式记录下一个索引值
             int next = (current + 1) % modulo;
+            // CAS设置下一个索引值，解决并发场景可能造成的数据问题，也可以通过锁机制完成
             if (nextIndex.compareAndSet(current, next) && current < modulo)
                 return current;
         }
@@ -196,10 +199,12 @@ public abstract class AbstractServerPredicate implements Predicate<PredicateKey>
      * Choose a server in a round robin fashion after the predicate filters a given list of servers and load balancer key. 
      */
     public Optional<Server> chooseRoundRobinAfterFiltering(List<Server> servers, Object loadBalancerKey) {
+        // 过滤
         List<Server> eligible = getEligibleServers(servers, loadBalancerKey);
         if (eligible.size() == 0) {
             return Optional.absent();
         }
+        // incrementAndGetModulo，轮询到的实例索引值计算方法
         return Optional.of(eligible.get(incrementAndGetModulo(eligible.size())));
     }
         
