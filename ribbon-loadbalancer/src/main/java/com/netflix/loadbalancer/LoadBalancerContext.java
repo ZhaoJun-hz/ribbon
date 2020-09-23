@@ -473,6 +473,7 @@ public class LoadBalancerContext implements IClientConfigAware {
         // Various Supported Cases
         // The loadbalancer to use and the instances it has is based on how it was registered
         // In each of these cases, the client might come in using Full Url or Partial URL
+        // 来到了Ribbon的逻辑，默认是ZoneAwareLoadBalancer，通过它调用负载均衡策略完成server的选择
         ILoadBalancer lb = getLoadBalancer();
         if (host == null) {
             // Partial URI or no URI Case

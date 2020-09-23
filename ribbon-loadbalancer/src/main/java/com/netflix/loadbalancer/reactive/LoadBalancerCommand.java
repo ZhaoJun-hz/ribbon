@@ -272,7 +272,8 @@ public class LoadBalancerCommand<T> {
         final int maxRetrysNext = retryHandler.getMaxRetriesOnNextServer();
 
         // Use the load balancer
-        Observable<T> o = 
+        Observable<T> o =
+                // submit方法中要进行负载均衡算法选择实例了，selectServer()
                 (server == null ? selectServer() : Observable.just(server))
                 .concatMap(new Func1<Server, Observable<T>>() {
                     @Override

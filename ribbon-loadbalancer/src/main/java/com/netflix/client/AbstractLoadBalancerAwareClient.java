@@ -94,7 +94,9 @@ public abstract class AbstractLoadBalancerAwareClient<S extends ClientRequest, T
         LoadBalancerCommand<T> command = buildLoadBalancerCommand(request, requestConfig);
 
         try {
+            // submit方法
             return command.submit(
+                    // ServerOperation对象，服务实例操作对象，传入submit方法，该对象有一个方法叫做call
                 new ServerOperation<T>() {
                     @Override
                     public Observable<T> call(Server server) {
